@@ -23,3 +23,11 @@ class BaselineCNN(nn.Module):
 
     def forward(self, x):
         return self.classifier(self.pool(self.features(x)))
+from torchvision import models
+
+
+def build_resnet18(num_classes=10, pretrained=True):
+    weights = models.ResNet18_Weights.DEFAULT if pretrained else None
+    m = models.resnet18(weights=weights)
+    m.fc = nn.Sequential(nn.Dropout(0.3), nn.Linear(m.fc.in_features, num_classes))
+    return m
