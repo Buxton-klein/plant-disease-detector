@@ -7,14 +7,14 @@ import torch
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.metrics import f1_score
-from src.dataset import ROOT, make_tf
+from torchvision import transforms; from src.dataset import ROOT, MEAN, STD
 from src.gradcam import load_model, short, SIZE
 
 RW = ROOT / "data" / "plantdoc_tomato"
 
 
 def run(model, classes, bs=32):
-    tf = make_tf(SIZE, False)
+    tf = transforms.Compose([transforms.Resize(224), transforms.CenterCrop(224), transforms.ToTensor(), transforms.Normalize(MEAN, STD)])
     rows = []
     for cls_dir in sorted(RW.iterdir()):
         if cls_dir.is_dir() and cls_dir.name in classes:
@@ -71,3 +71,4 @@ if __name__ == "__main__":
     out["true"] = [classes[i] for i in y]
     out["pred_name"] = [classes[i] for i in p]
     out.drop(columns=["y", "pred"]).to_csv(ROOT / "reports" / "plantdoc_predictions.csv", index=False)
+
